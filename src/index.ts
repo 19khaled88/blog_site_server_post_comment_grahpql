@@ -1,15 +1,14 @@
 import { ApolloServer } from '@apollo/server';
-import { startStandaloneServer } from '@apollo/server/standalone';
-import {expressMiddleware} from '@apollo/server/express4'
-import {ApolloServerPluginDrainHttpServer} from '@apollo/server/plugin/drainHttpServer'
-import { typeDefs } from './graphql/schema';
-import { resolvers } from './graphql/resolvers';
+import { expressMiddleware } from '@apollo/server/express4';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { Prisma, PrismaClient } from "@prisma/client";
 import { DefaultArgs } from '@prisma/client/runtime/library';
+import cors from 'cors';
+import express from 'express';
+import http from 'http';
+import { resolvers } from './graphql/resolvers';
+import { typeDefs } from './graphql/schema';
 import { jwtHelper } from './utils/jwtValidation';
-import http from 'http'
-import express from 'express'
-import cors from 'cors'
 
 export const prisma = new PrismaClient()
 
@@ -48,7 +47,7 @@ const startApolloServer = async( ) => {
   });
 
   await server.start();
-  
+
   app.use(
     '/graphqlApi',
     cors<cors.CorsRequest>(),
@@ -68,14 +67,6 @@ const startApolloServer = async( ) => {
 }
 
 startApolloServer()
-
-export default cors(async(req,res)=>{
-  if(req.method === 'OPTIONS'){
-    return false
-  }
-
-  await startApolloServer();
-})
 
 console.log(`🚀 Server ready at http://localhost:4001/graphqlApi`);
 
