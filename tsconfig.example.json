@@ -1,0 +1,29 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+      "module": "esnext",
+      "esModuleInterop": true,
+      "target": "es2021",
+      "moduleResolution": "node",
+      "sourceMap": true,
+      "outDir": "dist",
+      "rootDir": "src",
+      "types": [
+        "node"
+      ],
+      
+    },
+    "lib": [
+      "es2021"
+    ],
+    "include": [
+      "/**/*.ts"
+    ],
+    "exclude": [
+      "node_modules"
+    ],
+    "ts-node": {
+      "esm": true,
+      "experimentalSpecifierResolution": "node"
+    }
+  }
