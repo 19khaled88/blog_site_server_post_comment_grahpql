@@ -43,9 +43,12 @@ const startApolloServer = async( ) => {
     typeDefs,
     resolvers,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+    introspection:true,
+    
   });
 
   await server.start();
+  
   app.use(
     '/graphqlApi',
     cors<cors.CorsRequest>(),
@@ -65,6 +68,14 @@ const startApolloServer = async( ) => {
 }
 
 startApolloServer()
+
+export default cors(async(req,res)=>{
+  if(req.method === 'OPTIONS'){
+    return false
+  }
+
+  await startApolloServer();
+})
 
 console.log(`🚀 Server ready at http://localhost:4001/graphqlApi`);
 
