@@ -29,7 +29,6 @@ export const typeDefs = `#graphql
   }
 
 
-
   type AuthResponse {
     message:String
     token:String

@@ -34,37 +34,30 @@ interface Context {
 
 
 
-interface MyContext {
-  token?: String;
-}
-
-const startApolloServer = async( ) => {
-  const server = new ApolloServer<MyContext>({
+const main = async () => {
+  const server = new ApolloServer({
     typeDefs,
     resolvers,
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+    plugins:[]
   });
 
-  await server.start();
-  app.use(
-    '/graphqlApi',
-    cors<cors.CorsRequest>(),
-    express.json(),
-    expressMiddleware(server,{
-      context:async({req}):Promise<Context>=>{
-        const userInfo = await jwtHelper.getInfoFromToken(req.headers.authorization as string)
-        return{
-          prisma,
-          userInfo
-        }
+  const { url } = await startStandaloneServer(server, {
+    listen: { port: 4000 },
+  
+    context: async ({ req }): Promise<Context> => {
+      const userInfo = await jwtHelper.getInfoFromToken(req.headers.authorization as string)
+        
+      return {
+        prisma,
+        userInfo
       }
-    })
-  );
+    }
+    
+  });
+ 
+  
 
-  await new Promise<void>((resolve)=>httpServer.listen({port:4001}))
+  console.log(`🚀  Server ready at: ${url}`);
 }
 
-startApolloServer()
-
-console.log(`🚀 Server ready at http://localhost:4001/graphqlApi`);
-
+main().catch(e => console.error(e));

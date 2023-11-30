@@ -1,6 +1,5 @@
 import { ApolloServer } from '@apollo/server';
-import { expressMiddleware } from '@apollo/server/express4';
-import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import { startStandaloneServer } from '@apollo/server/standalone';
 import { typeDefs } from './graphql/schema';
 import { resolvers } from './graphql/resolvers';
 import { PrismaClient } from "@prisma/client";
@@ -15,14 +14,14 @@ app.use(cors());
 app.use(express.json());
 //create http server
 const httpServer = http.createServer(app);
-const startApolloServer = async () => {
+const main = async () => {
     const server = new ApolloServer({
         typeDefs,
         resolvers,
-        plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+        plugins: []
     });
-    await server.start();
-    app.use('/graphqlApi', cors(), express.json(), expressMiddleware(server, {
+    const { url } = await startStandaloneServer(server, {
+        listen: { port: 4000 },
         context: async ({ req }) => {
             const userInfo = await jwtHelper.getInfoFromToken(req.headers.authorization);
             return {
@@ -30,9 +29,8 @@ const startApolloServer = async () => {
                 userInfo
             };
         }
-    }));
-    await new Promise((resolve) => httpServer.listen({ port: 4001 }));
+    });
+    console.log(`🚀  Server ready at: ${url}`);
 };
-startApolloServer();
-console.log(`🚀 Server ready at http://localhost:4001/graphqlApi`);
-//# sourceMappingURL=index.js.map
+main().catch(e => console.error(e));
+//# sourceMappingURL=server.demo.js.map
