@@ -55,6 +55,7 @@ const startApolloServer = async( ) => {
     expressMiddleware(server,{
       context:async({req}):Promise<Context>=>{
         const userInfo = await jwtHelper.getInfoFromToken(req.headers.authorization as string)
+        
         return{
           prisma,
           userInfo
